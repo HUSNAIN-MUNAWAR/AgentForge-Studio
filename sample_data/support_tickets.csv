@@ -1,0 +1,4 @@
+ticket_id,category,priority,message
+101,login,high,"User cannot login after password reset"
+102,billing,medium,"Invoice export misses tax ID"
+103,performance,high,"CSV dashboard times out for enterprise account"

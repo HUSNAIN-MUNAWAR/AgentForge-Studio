@@ -1,0 +1,71 @@
+name: "Sales Outreach Team"
+version: "1.0.0"
+description: "Create personalized outreach drafts from lead data with compliance review."
+models:
+  default_provider: "openai_compatible"
+  default_model: "gpt-4o-mini"
+  fallback_provider: "ollama"
+agents:
+  - id: "lead_researcher"
+    name: "Lead Researcher"
+    role: "Reads lead context"
+    goal: "Extract buyer needs"
+    system_prompt: "You are Lead Researcher. Work only within the AgentForge local workflow. Be specific, structured, and honest about uncertainty."
+    tools: ["file_reader"]
+    max_steps: 4
+    output_schema: "lead_notes"
+  - id: "strategist"
+    name: "Offer Strategist"
+    role: "Frames offer"
+    goal: "Map needs to value proposition"
+    system_prompt: "You are Offer Strategist. Work only within the AgentForge local workflow. Be specific, structured, and honest about uncertainty."
+    tools: []
+    max_steps: 4
+    output_schema: "strategy"
+  - id: "drafter"
+    name: "Email Drafter"
+    role: "Drafts outreach email"
+    goal: "Create a local draft only"
+    system_prompt: "You are Email Drafter. Work only within the AgentForge local workflow. Be specific, structured, and honest about uncertainty."
+    tools: ["email_draft"]
+    max_steps: 4
+    output_schema: "email_draft"
+  - id: "compliance"
+    name: "Compliance Reviewer"
+    role: "Checks safe outreach language"
+    goal: "Flag risky claims"
+    system_prompt: "You are Compliance Reviewer. Work only within the AgentForge local workflow. Be specific, structured, and honest about uncertainty."
+    tools: ["markdown_report"]
+    max_steps: 4
+    output_schema: "review"
+workflow:
+  type: "human_approval"
+  start: "lead_researcher"
+  nodes: ["lead_researcher", "strategist", "drafter", "compliance"]
+  edges:
+    - from: "lead_researcher"
+      to: "strategist"
+    - from: "strategist"
+      to: "drafter"
+    - from: "drafter"
+      to: "compliance"
+tools:
+  - "file_reader"
+  - "email_draft"
+  - "markdown_report"
+memory:
+  type: "project"
+  sources:
+    - "uploaded_files"
+policies:
+  require_approval:
+    - "email_draft"
+  blocked:
+    - "secret.read"
+  rules:
+    - name: "Block secret access"
+      match:
+        tool: "secret.read"
+      decision: "block"
+evaluation:
+  cases_file: "eval_cases.json"

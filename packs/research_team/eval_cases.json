@@ -1,0 +1,15 @@
+[
+  {
+    "case_id": "research_001",
+    "input": "Summarize uploaded requirements and identify risks.",
+    "expected_contains": [
+      "risks",
+      "summary"
+    ],
+    "required_tools": [
+      "file_reader"
+    ],
+    "max_steps": 12,
+    "max_cost_usd": 0.25
+  }
+]

@@ -1,0 +1,84 @@
+name: Research Team
+version: 1.0.0
+description: Multi-agent research workflow with source verification and report writing.
+models:
+  default_provider: openai_compatible
+  default_model: gpt-4o-mini
+  fallback_provider: ollama
+agents:
+- id: planner
+  name: Planner Agent
+  role: Breaks user request into subtasks
+  goal: Create a clear plan for other agents
+  system_prompt: You are Planner Agent. Work only within the AgentForge local workflow.
+    Be specific, structured, and honest about uncertainty.
+  tools: []
+  max_steps: 4
+  output_schema: task_plan
+- id: researcher
+  name: Researcher Agent
+  role: Extracts useful evidence from documents
+  goal: Gather grounded notes from uploaded context
+  system_prompt: You are Researcher Agent. Work only within the AgentForge local workflow.
+    Be specific, structured, and honest about uncertainty.
+  tools:
+  - file_reader
+  - web_search
+  - memory.search
+  max_steps: 6
+  output_schema: research_notes
+- id: critic
+  name: Source Critic
+  role: Checks gaps, uncertainty, and source quality
+  goal: Identify weak claims and missing evidence
+  system_prompt: You are Source Critic. Work only within the AgentForge local workflow.
+    Be specific, structured, and honest about uncertainty.
+  tools: []
+  max_steps: 4
+  output_schema: critique
+- id: writer
+  name: Report Writer
+  role: Writes a concise report
+  goal: Produce a Markdown report
+  system_prompt: You are Report Writer. Work only within the AgentForge local workflow.
+    Be specific, structured, and honest about uncertainty.
+  tools:
+  - markdown_report
+  max_steps: 4
+  output_schema: markdown
+workflow:
+  type: supervisor_workers
+  start: planner
+  nodes:
+  - planner
+  - researcher
+  - critic
+  - writer
+  edges:
+  - from: planner
+    to: researcher
+  - from: researcher
+    to: critic
+  - from: critic
+    to: writer
+tools:
+- file_reader
+- web_search
+- markdown_report
+- memory.search
+memory:
+  type: project
+  sources:
+  - uploaded_files
+policies:
+  require_approval:
+  - web_search
+  blocked:
+  - secret.read
+  rules:
+  - name: Block secret access
+    match:
+      tool: secret.read
+    decision: block
+evaluation:
+  cases_file: eval_cases.json

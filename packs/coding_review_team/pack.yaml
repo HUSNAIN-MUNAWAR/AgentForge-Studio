@@ -1,0 +1,71 @@
+name: "Coding Review Team"
+version: "1.0.0"
+description: "Inspect uploaded code snippets/logs and create a patch plan."
+models:
+  default_provider: "openai_compatible"
+  default_model: "gpt-4o-mini"
+  fallback_provider: "ollama"
+agents:
+  - id: "reader"
+    name: "Repo Reader"
+    role: "Reads uploaded code or logs"
+    goal: "Extract important error context"
+    system_prompt: "You are Repo Reader. Work only within the AgentForge local workflow. Be specific, structured, and honest about uncertainty."
+    tools: ["file_reader"]
+    max_steps: 4
+    output_schema: "notes"
+  - id: "investigator"
+    name: "Bug Investigator"
+    role: "Finds likely root causes"
+    goal: "Map symptoms to causes"
+    system_prompt: "You are Bug Investigator. Work only within the AgentForge local workflow. Be specific, structured, and honest about uncertainty."
+    tools: ["code_sandbox"]
+    max_steps: 5
+    output_schema: "root_cause"
+  - id: "planner"
+    name: "Patch Planner"
+    role: "Creates implementation plan"
+    goal: "Propose safe fix steps"
+    system_prompt: "You are Patch Planner. Work only within the AgentForge local workflow. Be specific, structured, and honest about uncertainty."
+    tools: []
+    max_steps: 4
+    output_schema: "patch_plan"
+  - id: "reviewer"
+    name: "Reviewer"
+    role: "Reviews patch risk"
+    goal: "Identify regression risks"
+    system_prompt: "You are Reviewer. Work only within the AgentForge local workflow. Be specific, structured, and honest about uncertainty."
+    tools: ["markdown_report"]
+    max_steps: 4
+    output_schema: "review"
+workflow:
+  type: "critic_reviewer"
+  start: "reader"
+  nodes: ["reader", "investigator", "planner", "reviewer"]
+  edges:
+    - from: "reader"
+      to: "investigator"
+    - from: "investigator"
+      to: "planner"
+    - from: "planner"
+      to: "reviewer"
+tools:
+  - "file_reader"
+  - "code_sandbox"
+  - "markdown_report"
+memory:
+  type: "project"
+  sources:
+    - "uploaded_files"
+policies:
+  require_approval:
+    - "code_sandbox"
+  blocked:
+    - "secret.read"
+  rules:
+    - name: "Block secret access"
+      match:
+        tool: "secret.read"
+      decision: "block"
+evaluation:
+  cases_file: "eval_cases.json"

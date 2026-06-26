@@ -1,0 +1,15 @@
+[
+  {
+    "case_id": "doc_review_001",
+    "input": "Review document and identify risky clauses.",
+    "expected_contains": [
+      "risk",
+      "clause"
+    ],
+    "required_tools": [
+      "file_reader"
+    ],
+    "max_steps": 10,
+    "max_cost_usd": 0.3
+  }
+]

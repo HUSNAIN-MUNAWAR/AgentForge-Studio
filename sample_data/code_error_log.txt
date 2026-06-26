@@ -1,0 +1,3 @@
+ERROR app.runner TraceSpan commit failed because session was closed
+WARNING tool.csv_analyzer Missing value count skipped nullable column
+TODO add retry logic around provider timeout

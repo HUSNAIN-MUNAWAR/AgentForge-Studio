@@ -1,0 +1,4 @@
+export default function DocsPage() {
+  const docs = ["architecture", "agent-pack-format", "workflow-engine", "tool-system", "policy-engine", "human-approval", "trace-schema", "evaluation-methodology", "mlops-agentops", "security-model", "queue-worker", "memory-search", "docker-deployment", "limitations", "demo-script"];
+  return <main className="space-y-6"><section className="hero-card"><p className="eyebrow">Docs</p><h1 className="page-title">Developer documentation map</h1><p className="page-subtitle">The full markdown docs live under /docs in the repository so GitHub visitors can inspect architecture and extension points.</p></section><section className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">{docs.map(doc => <div key={doc} className="card"><h2 className="section-title">{doc}.md</h2><p className="muted">Open this file in the repository docs folder.</p></div>)}</section></main>;
+}

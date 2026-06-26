@@ -1,0 +1,10 @@
+.env
+storage/
+__pycache__/
+*.pyc
+.pytest_cache/
+.next/
+node_modules/
+agentforge.db
+test_agentforge.db
+postgres_data/

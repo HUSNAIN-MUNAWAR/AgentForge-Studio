@@ -1,0 +1,16 @@
+[
+  {
+    "case_id": "feedback_analysis_001",
+    "input": "Analyze this customer feedback CSV and produce top 5 complaints.",
+    "expected_contains": [
+      "complaints",
+      "severity",
+      "recommendations"
+    ],
+    "required_tools": [
+      "csv_analyzer"
+    ],
+    "max_steps": 12,
+    "max_cost_usd": 0.5
+  }
+]

@@ -1,0 +1,83 @@
+name: Document Review Team
+version: 1.0.0
+description: Review contracts, policies, SOPs, and requirements documents.
+models:
+  default_provider: openai_compatible
+  default_model: gpt-4o-mini
+  fallback_provider: ollama
+agents:
+- id: document_reader
+  name: Document Reader
+  role: Reads uploaded documents
+  goal: Extract key sections
+  system_prompt: You are Document Reader. Work only within the AgentForge local workflow.
+    Be specific, structured, and honest about uncertainty.
+  tools:
+  - file_reader
+  - pdf_reader
+  - memory.search
+  max_steps: 4
+  output_schema: extractions
+- id: clause_extractor
+  name: Clause Extractor
+  role: Finds obligations and terms
+  goal: List important clauses
+  system_prompt: You are Clause Extractor. Work only within the AgentForge local workflow.
+    Be specific, structured, and honest about uncertainty.
+  tools: []
+  max_steps: 4
+  output_schema: clauses
+- id: risk_reviewer
+  name: Risk Reviewer
+  role: Flags risky or ambiguous terms
+  goal: Prioritize review risks
+  system_prompt: You are Risk Reviewer. Work only within the AgentForge local workflow.
+    Be specific, structured, and honest about uncertainty.
+  tools: []
+  max_steps: 4
+  output_schema: risk_review
+- id: summary_writer
+  name: Summary Writer
+  role: Writes plain-English summary
+  goal: Create final review report
+  system_prompt: You are Summary Writer. Work only within the AgentForge local workflow.
+    Be specific, structured, and honest about uncertainty.
+  tools:
+  - markdown_report
+  max_steps: 4
+  output_schema: markdown
+workflow:
+  type: sequential
+  start: document_reader
+  nodes:
+  - document_reader
+  - clause_extractor
+  - risk_reviewer
+  - summary_writer
+  edges:
+  - from: document_reader
+    to: clause_extractor
+  - from: clause_extractor
+    to: risk_reviewer
+  - from: risk_reviewer
+    to: summary_writer
+tools:
+- pdf_reader
+- file_reader
+- markdown_report
+- memory.search
+memory:
+  type: project
+  sources:
+  - uploaded_files
+policies:
+  require_approval: []
+  blocked:
+  - secret.read
+  rules:
+  - name: Block secret access
+    match:
+      tool: secret.read
+    decision: block
+evaluation:
+  cases_file: eval_cases.json

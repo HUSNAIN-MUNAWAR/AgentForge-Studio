@@ -1,0 +1,6 @@
+id,customer,plan,feedback,severity,rating
+1,Amina,Pro,"Dashboard is slow when loading large CSV exports",high,2
+2,Omar,Free,"I cannot find the export button on mobile",medium,3
+3,Sara,Enterprise,"Great support but PDF upload failed twice",high,2
+4,Usman,Pro,"Charts are useful but the filter labels are confusing",low,4
+5,Hina,Enterprise,"Need audit logs for admin actions",medium,3

@@ -1,0 +1,16 @@
+[
+  {
+    "case_id": "sales_001",
+    "input": "Draft outreach from lead notes.",
+    "expected_contains": [
+      "draft",
+      "value"
+    ],
+    "required_tools": [
+      "email_draft"
+    ],
+    "expect_approval": true,
+    "max_steps": 10,
+    "max_cost_usd": 0.25
+  }
+]
